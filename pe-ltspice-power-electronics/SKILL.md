@@ -5,6 +5,11 @@ description: Use this skill for LTspice power electronics simulation workflows, 
 
 # LTspice Power Electronics Simulation
 
+## Accessibility
+
+This optional variant uses free proprietary LTspice. Validate device models and dialect compatibility before translating to ngspice.
+For the scoped open path, see `../pe-ngspice-switching-validation/SKILL.md` when available in the collection.
+
 ## Goal
 
 Use this skill to build, inspect, and debug LTspice simulations for power supplies and power converters. The priority is to make simulation results credible, reproducible, and useful for engineering decisions.

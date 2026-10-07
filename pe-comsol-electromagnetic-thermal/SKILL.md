@@ -5,6 +5,11 @@ description: Use this skill for COMSOL-based power electronics electromagnetic a
 
 # COMSOL Electromagnetic And Thermal Simulation For Power Electronics
 
+## Accessibility
+
+This optional variant requires an external commercial tool licence. Open field solvers need a separately justified model; no one-to-one multiphysics replacement claimed.
+For the scoped open path, see `../pe-open-fea-problem-setup/SKILL.md` when available in the collection.
+
 ## Goal
 
 Use this skill as an expert workflow for COMSOL electromagnetic, thermal, and multiphysics simulation in power electronics. It is intended for magnetic components, busbars, PCB copper, power modules, heatsinks, and coupled loss-to-temperature studies where model credibility depends on physics selection, material data, mesh, boundary conditions, and validation.

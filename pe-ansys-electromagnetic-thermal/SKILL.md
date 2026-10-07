@@ -5,6 +5,11 @@ description: Use this skill for ANSYS-based power electronics electromagnetic an
 
 # ANSYS Electromagnetic And Thermal Simulation For Power Electronics
 
+## Accessibility
+
+This optional variant requires an external commercial tool licence. Elmer/GetDP/CalculiX/openEMS only for suitable physics; specialised features and material databases may differ.
+For the scoped open path, see `../pe-open-fea-problem-setup/SKILL.md` when available in the collection.
+
 ## Goal
 
 Use this skill as an expert workflow for ANSYS electromagnetic and thermal simulation in power electronics. It is intended for magnetic components, busbars, power modules, heatsinks, and coupled loss-to-temperature studies where simulation credibility depends on geometry simplification, material data, boundary conditions, mesh quality, and validation against electrical or thermal measurements.

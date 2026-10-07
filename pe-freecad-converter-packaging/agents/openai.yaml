@@ -1,0 +1,4 @@
+interface:
+  display_name: "Converter Mechanical Packaging"
+  short_description: "Define and check converter packaging in FreeCAD"
+  default_prompt: "Use $pe-freecad-converter-packaging to analyse this converter engineering problem and preserve evidence and assumptions."

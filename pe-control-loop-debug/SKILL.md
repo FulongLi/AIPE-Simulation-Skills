@@ -5,6 +5,11 @@ description: Use this skill for power electronics control-loop simulation and de
 
 # Power Electronics Control-Loop Simulation And Debugging
 
+## Accessibility
+
+Tool and hardware access depends on the chosen execution variant. Python averaged analysis reduces fidelity; preserve requested switching-tool diagnosis.
+For the scoped open path, see `../pe-python-control-analysis/SKILL.md` when available in the collection.
+
 ## Goal
 
 Use this skill when helping power electronics engineers diagnose control-loop simulation and debugging problems. Prefer executable checks, key waveforms, and next experiments over generic control theory explanations.

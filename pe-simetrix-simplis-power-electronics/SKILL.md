@@ -5,6 +5,11 @@ description: Use this skill for SIMetrix and SIMPLIS power electronics simulatio
 
 # SIMetrix/SIMPLIS Power Electronics Simulation
 
+## Accessibility
+
+This optional variant requires an external commercial tool licence. Piecewise-linear periodic operating-point capability is not guaranteed in ngspice.
+For the scoped open path, see `../pe-ngspice-switching-validation/SKILL.md` when available in the collection.
+
 ## Goal
 
 Use this skill as an expert workflow for SIMetrix and SIMPLIS power electronics simulation. It focuses on converter-level switching behavior, fast transient analysis, double-pulse tests, device stress, control-loop validation, and simulation credibility.

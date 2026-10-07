@@ -1,0 +1,4 @@
+interface:
+  display_name: "Converter Control Analysis"
+  short_description: "Analyse averaged converter control with Python"
+  default_prompt: "Use $pe-python-control-analysis to analyse this converter engineering problem and preserve evidence and assumptions."

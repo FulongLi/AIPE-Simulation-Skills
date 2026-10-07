@@ -3,8 +3,9 @@ name: Skills Validation
 on:
   pull_request:
   push:
-    branches:
-      - main
+
+permissions:
+  contents: read
 
 jobs:
   validate-skills:
@@ -21,3 +22,16 @@ jobs:
 
       - name: Validate skills
         run: python3 scripts/validate_skills.py
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install open numerical example dependencies
+        run: python -m pip install -r pe-python-control-analysis/requirements.txt
+
+      - name: Install open circuit simulator
+        run: sudo apt-get update && sudo apt-get install -y ngspice
+
+      - name: Exercise numerical invariants and ngspice refinement
+        run: python -m unittest discover -s tests -v

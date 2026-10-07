@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-import datetime as _dt
+import json
 import re
 from pathlib import Path
 
@@ -38,6 +38,7 @@ def first_heading(path: Path) -> str:
 
 def skill_rows() -> list[dict[str, str]]:
     rows: list[dict[str, str]] = []
+    policy = {s['id']: s for s in json.loads((ROOT / 'skills.json').read_text())['skills']}
     for skill_md in sorted(ROOT.glob("*/SKILL.md")):
         if skill_md.parts[-2].startswith("."):
             continue
@@ -51,22 +52,22 @@ def skill_rows() -> list[dict[str, str]]:
                 "title": first_heading(skill_md),
                 "description": meta.get("description", ""),
                 "references": str(len(references)),
-                "status": "active" if agents.exists() else "draft",
+                "status": policy[skill_md.parent.name]['maturity'] if agents.exists() else "draft",
+                "access": policy[skill_md.parent.name]['access'],
             }
         )
     return rows
 
 
 def generate() -> str:
-    today = _dt.date.today().isoformat()
     rows = skill_rows()
 
     active_table = "\n".join(
         [
-            "| Skill | Status | Focus | References |",
-            "| --- | --- | --- | ---: |",
+            "| Skill | Maturity | Access | Focus | References |",
+            "| --- | --- | --- | --- | ---: |",
             *[
-                f"| [`{row['name']}`](./{row['folder']}/SKILL.md) | {row['status']} | {row['title']} | {row['references']} |"
+                f"| [`{row['name']}`](./{row['folder']}/SKILL.md) | {row['status']} | {row['access']} | {row['title']} | {row['references']} |"
                 for row in rows
             ],
         ]
@@ -86,13 +87,24 @@ def generate() -> str:
     else:
         planned_table = "_No planned skills are listed right now. Add future items to `PLANNED_SKILLS` in `scripts/update_readme.py`._"
 
-    return f"""# Spirit Connect Giants Skills PE
+    return f"""# AIPE Simulation Skills
 
-Spirit Connect Giants Skills PE is a Codex Skills repository for power electronics engineering. Its purpose is to turn project experience, simulation workflows, debugging judgment, and engineering checklists into reusable AI workflows that can help more people design, simulate, and diagnose power electronics systems.
+AIPE means **AI for Power Engineering**. This repository translates engineering questions into reusable simulation, CAD, PCB and field-analysis workflows. Open-source tools are the default learning path; commercial workflows remain optional professional integrations.
 
-The first stage focuses on simulation, debugging, digital control implementation, and electromagnetic/thermal multiphysics workflows for control loops, PLECS, LTspice, SIMetrix/SIMPLIS, MATLAB/Simulink, DSP/MCU targets, FPGA targets, ANSYS, and COMSOL.
+All eight existing workflows and their reference material are retained. Five new engineering workflows add Python control analysis, ngspice switching validation, FreeCAD packaging, KiCad power-stage review and open field-analysis problem setup. LTspice is free proprietary software. PLECS, MATLAB/Simulink, SIMetrix/SIMPLIS, ANSYS and COMSOL require external licences for their respective variants.
 
-Generated on: {today}
+The [tool policy and capability matrix](docs/tool-policy.md), [skill metadata](skills.json), [AIPE manifest](aipe.yaml), and [Core mapping](docs/core-mapping.md) describe exact boundaries. CAD/PCB/FEA additions are workflow scaffolds; MCP candidates are researched only. Existing repository content has no declared blanket licence and remains `NOASSERTION`.
+
+## Runnable Open Example
+
+Create an isolated Python environment, install `pe-python-control-analysis/requirements.txt`, and run:
+
+```sh
+python pe-python-control-analysis/scripts/buck_control.py --output buck-result.json
+python -m unittest discover -s tests -v
+```
+
+The synthetic averaged buck example checks numerical behaviour with python-control; it claims no hardware validation. An ngspice netlist is included and exercised in Ubuntu CI; solver-dependent local tests explicitly skip when ngspice is absent.
 
 ## Active Skills
 
@@ -123,7 +135,7 @@ python3 scripts/update_readme.py
 python3 scripts/validate_skills.py
 ```
 
-`scripts/update_readme.py` scans all `*/SKILL.md` files and regenerates the Active Skills table and generated date. `scripts/validate_skills.py` checks skill metadata, referenced files, UI metadata, and whether README is current.
+`scripts/update_readme.py` scans all `*/SKILL.md` files and `skills.json` to regenerate this document deterministically. `scripts/validate_skills.py` checks metadata, references, UI metadata and README freshness. Update the sidecar metadata when adding a skill.
 
 ## Repository Convention
 

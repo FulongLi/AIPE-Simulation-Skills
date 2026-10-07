@@ -1,0 +1,305 @@
+{
+  "schema_version": "0.1.0",
+  "reviewed_on": "2026-10-07",
+  "skills": [
+    {
+      "id": "pe-ansys-electromagnetic-thermal",
+      "path": "pe-ansys-electromagnetic-thermal/SKILL.md",
+      "access": "commercial",
+      "maturity": "usable",
+      "required_tools": [
+        "ansys"
+      ],
+      "optional_at_collection_level": true,
+      "external_licence_required": true,
+      "open_alternative": "pe-open-fea-problem-setup",
+      "limitations": [
+        "Elmer/GetDP/CalculiX/openEMS only for suitable physics; specialised features and material databases may differ."
+      ],
+      "inputs": [
+        "topology and operating context",
+        "model assumptions and source evidence"
+      ],
+      "outputs": [
+        "analysis artifacts or explicit unexecuted plan",
+        "validation limitations and evidence"
+      ]
+    },
+    {
+      "id": "pe-comsol-electromagnetic-thermal",
+      "path": "pe-comsol-electromagnetic-thermal/SKILL.md",
+      "access": "commercial",
+      "maturity": "usable",
+      "required_tools": [
+        "comsol"
+      ],
+      "optional_at_collection_level": true,
+      "external_licence_required": true,
+      "open_alternative": "pe-open-fea-problem-setup",
+      "limitations": [
+        "Open field solvers need a separately justified model; no one-to-one multiphysics replacement claimed."
+      ],
+      "inputs": [
+        "topology and operating context",
+        "model assumptions and source evidence"
+      ],
+      "outputs": [
+        "analysis artifacts or explicit unexecuted plan",
+        "validation limitations and evidence"
+      ]
+    },
+    {
+      "id": "pe-control-loop-debug",
+      "path": "pe-control-loop-debug/SKILL.md",
+      "access": "mixed",
+      "maturity": "usable",
+      "required_tools": [],
+      "optional_at_collection_level": true,
+      "external_licence_required": false,
+      "open_alternative": "pe-python-control-analysis",
+      "limitations": [
+        "Python averaged analysis reduces fidelity; preserve requested switching-tool diagnosis."
+      ],
+      "inputs": [
+        "topology and operating context",
+        "model assumptions and source evidence"
+      ],
+      "outputs": [
+        "analysis artifacts or explicit unexecuted plan",
+        "validation limitations and evidence"
+      ],
+      "tool_options": [
+        "python-control",
+        "plecs",
+        "ltspice"
+      ]
+    },
+    {
+      "id": "pe-dsp-fpga-control-debug",
+      "path": "pe-dsp-fpga-control-debug/SKILL.md",
+      "access": "target-dependent",
+      "maturity": "usable",
+      "required_tools": [],
+      "optional_at_collection_level": true,
+      "external_licence_required": false,
+      "open_alternative": null,
+      "limitations": [
+        "Open timing/numerical checks are possible; target hardware, debug probes and compiler/FPGA tool licences vary."
+      ],
+      "inputs": [
+        "topology and operating context",
+        "model assumptions and source evidence"
+      ],
+      "outputs": [
+        "analysis artifacts or explicit unexecuted plan",
+        "validation limitations and evidence"
+      ]
+    },
+    {
+      "id": "pe-ltspice-power-electronics",
+      "path": "pe-ltspice-power-electronics/SKILL.md",
+      "access": "free_proprietary",
+      "maturity": "usable",
+      "required_tools": [
+        "ltspice"
+      ],
+      "optional_at_collection_level": true,
+      "external_licence_required": false,
+      "open_alternative": "pe-ngspice-switching-validation",
+      "limitations": [
+        "Validate device models and dialect compatibility before translating to ngspice."
+      ],
+      "inputs": [
+        "topology and operating context",
+        "model assumptions and source evidence"
+      ],
+      "outputs": [
+        "analysis artifacts or explicit unexecuted plan",
+        "validation limitations and evidence"
+      ]
+    },
+    {
+      "id": "pe-plecs-power-electronics",
+      "path": "pe-plecs-power-electronics/SKILL.md",
+      "access": "commercial",
+      "maturity": "usable",
+      "required_tools": [
+        "plecs"
+      ],
+      "optional_at_collection_level": true,
+      "external_licence_required": true,
+      "open_alternative": "pe-ngspice-switching-validation",
+      "limitations": [
+        "ngspice and Python cover reduced circuit/control experiments; event solvers, thermal libraries and code generation differ."
+      ],
+      "inputs": [
+        "topology and operating context",
+        "model assumptions and source evidence"
+      ],
+      "outputs": [
+        "analysis artifacts or explicit unexecuted plan",
+        "validation limitations and evidence"
+      ]
+    },
+    {
+      "id": "pe-simetrix-simplis-power-electronics",
+      "path": "pe-simetrix-simplis-power-electronics/SKILL.md",
+      "access": "commercial",
+      "maturity": "usable",
+      "required_tools": [
+        "simetrix-simplis"
+      ],
+      "optional_at_collection_level": true,
+      "external_licence_required": true,
+      "open_alternative": "pe-ngspice-switching-validation",
+      "limitations": [
+        "Piecewise-linear periodic operating-point capability is not guaranteed in ngspice."
+      ],
+      "inputs": [
+        "topology and operating context",
+        "model assumptions and source evidence"
+      ],
+      "outputs": [
+        "analysis artifacts or explicit unexecuted plan",
+        "validation limitations and evidence"
+      ]
+    },
+    {
+      "id": "pe-simulink-power-electronics",
+      "path": "pe-simulink-power-electronics/SKILL.md",
+      "access": "commercial",
+      "maturity": "usable",
+      "required_tools": [
+        "matlab-simulink"
+      ],
+      "optional_at_collection_level": true,
+      "external_licence_required": true,
+      "open_alternative": "pe-python-control-analysis",
+      "limitations": [
+        "Python/Octave can cover numerical/control analysis; block semantics and code generation require separate migration."
+      ],
+      "inputs": [
+        "topology and operating context",
+        "model assumptions and source evidence"
+      ],
+      "outputs": [
+        "analysis artifacts or explicit unexecuted plan",
+        "validation limitations and evidence"
+      ]
+    },
+    {
+      "id": "pe-python-control-analysis",
+      "path": "pe-python-control-analysis/SKILL.md",
+      "access": "open_source",
+      "maturity": "prototype",
+      "required_tools": [
+        "python",
+        "python-control"
+      ],
+      "optional_at_collection_level": true,
+      "external_licence_required": false,
+      "open_alternative": null,
+      "limitations": [
+        "Ideal averaged CCM buck example; excludes switching, delay and saturation."
+      ],
+      "inputs": [
+        "topology and operating context",
+        "model assumptions and source evidence"
+      ],
+      "outputs": [
+        "analysis artifacts or explicit unexecuted plan",
+        "validation limitations and evidence"
+      ]
+    },
+    {
+      "id": "pe-ngspice-switching-validation",
+      "path": "pe-ngspice-switching-validation/SKILL.md",
+      "access": "open_source",
+      "maturity": "prototype",
+      "required_tools": [
+        "ngspice"
+      ],
+      "optional_at_collection_level": true,
+      "external_licence_required": false,
+      "open_alternative": null,
+      "limitations": [
+        "Idealised switched buck smoke test; device losses are not validated."
+      ],
+      "inputs": [
+        "topology and operating context",
+        "model assumptions and source evidence"
+      ],
+      "outputs": [
+        "analysis artifacts or explicit unexecuted plan",
+        "validation limitations and evidence"
+      ]
+    },
+    {
+      "id": "pe-freecad-converter-packaging",
+      "path": "pe-freecad-converter-packaging/SKILL.md",
+      "access": "open_source",
+      "maturity": "scaffold",
+      "required_tools": [
+        "freecad"
+      ],
+      "optional_at_collection_level": true,
+      "external_licence_required": false,
+      "open_alternative": null,
+      "limitations": [
+        "Engineering workflow only; no local CAD execution."
+      ],
+      "inputs": [
+        "topology and operating context",
+        "model assumptions and source evidence"
+      ],
+      "outputs": [
+        "analysis artifacts or explicit unexecuted plan",
+        "validation limitations and evidence"
+      ]
+    },
+    {
+      "id": "pe-kicad-power-stage-review",
+      "path": "pe-kicad-power-stage-review/SKILL.md",
+      "access": "open_source",
+      "maturity": "scaffold",
+      "required_tools": [
+        "kicad"
+      ],
+      "optional_at_collection_level": true,
+      "external_licence_required": false,
+      "open_alternative": null,
+      "limitations": [
+        "Engineering review workflow only; no local KiCad execution."
+      ],
+      "inputs": [
+        "topology and operating context",
+        "model assumptions and source evidence"
+      ],
+      "outputs": [
+        "analysis artifacts or explicit unexecuted plan",
+        "validation limitations and evidence"
+      ]
+    },
+    {
+      "id": "pe-open-fea-problem-setup",
+      "path": "pe-open-fea-problem-setup/SKILL.md",
+      "access": "open_source",
+      "maturity": "scaffold",
+      "required_tools": [],
+      "optional_at_collection_level": true,
+      "external_licence_required": false,
+      "open_alternative": null,
+      "limitations": [
+        "Choose Gmsh/Elmer/GetDP/CalculiX/openEMS by physics; no solved field example."
+      ],
+      "inputs": [
+        "topology and operating context",
+        "model assumptions and source evidence"
+      ],
+      "outputs": [
+        "analysis artifacts or explicit unexecuted plan",
+        "validation limitations and evidence"
+      ]
+    }
+  ]
+}

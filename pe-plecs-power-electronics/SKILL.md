@@ -5,6 +5,11 @@ description: Use this skill for PLECS power electronics simulation workflows, in
 
 # PLECS Power Electronics Simulation
 
+## Accessibility
+
+This optional variant requires an external commercial tool licence. ngspice and Python cover reduced circuit/control experiments; event solvers, thermal libraries and code generation differ.
+For the scoped open path, see `../pe-ngspice-switching-validation/SKILL.md` when available in the collection.
+
 ## Goal
 
 Use this skill to plan, build, inspect, and debug PLECS simulations for power electronics systems. The priority is to make the model fast enough for engineering iteration, detailed enough for the target question, and credible enough to support design decisions.

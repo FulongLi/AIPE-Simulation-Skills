@@ -1,0 +1,4 @@
+interface:
+  display_name: "ngspice Switching Validation"
+  short_description: "Validate converter switching experiments openly"
+  default_prompt: "Use $pe-ngspice-switching-validation to analyse this converter engineering problem and preserve evidence and assumptions."

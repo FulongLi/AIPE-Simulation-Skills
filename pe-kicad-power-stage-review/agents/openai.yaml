@@ -1,0 +1,4 @@
+interface:
+  display_name: "KiCad Power Stage Review"
+  short_description: "Review converter placement and power current paths"
+  default_prompt: "Use $pe-kicad-power-stage-review to analyse this converter engineering problem and preserve evidence and assumptions."

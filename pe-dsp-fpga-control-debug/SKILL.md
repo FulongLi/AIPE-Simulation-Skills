@@ -5,6 +5,10 @@ description: Use this skill for power electronics digital control implementation
 
 # DSP And FPGA Power Electronics Control Debugging
 
+## Accessibility
+
+Tool and hardware access depends on the chosen execution variant. Open timing/numerical checks are possible; target hardware, debug probes and compiler/FPGA tool licences vary.
+
 ## Goal
 
 Use this skill to help power electronics engineers move control algorithms from simulation into DSP, MCU, FPGA, or high-speed FPGA implementations. The priority is to find timing, scaling, sampling, PWM, protection, and implementation issues that make real digital control behave differently from the model.

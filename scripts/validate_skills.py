@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import re
+import json
 import sys
 from pathlib import Path
 
@@ -11,6 +12,26 @@ import update_readme
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def validate_catalogue(data: dict) -> list[str]:
+    errors = []
+    expected = {p.parent.name for p in ROOT.glob('*/SKILL.md')}
+    ids = [s['id'] for s in data['skills']]
+    if len(ids) != len(set(ids)) or set(ids) != expected:
+        errors.append('skills.json must cover every skill exactly once')
+    for skill in data['skills']:
+        if skill['path'] != skill['id'] + '/SKILL.md':
+            errors.append('Skill path does not match ID: ' + skill['id'])
+        if skill['access'] not in {'commercial', 'free_proprietary', 'open_source', 'mixed', 'target-dependent'}:
+            errors.append('Unknown accessibility: ' + skill['id'])
+        if skill['access'] == 'commercial' and not skill['external_licence_required']:
+            errors.append('Commercial skill requires external licence: ' + skill['id'])
+        if skill['open_alternative'] and skill['open_alternative'] not in expected:
+            errors.append('Unknown open alternative: ' + skill['id'])
+        if not skill['limitations'] or not skill['optional_at_collection_level']:
+            errors.append('Missing limitations or mandatory collection variant: ' + skill['id'])
+    return errors
 
 
 def parse_frontmatter(path: Path) -> dict[str, str]:
@@ -54,6 +75,7 @@ def validate_skill(skill_md: Path) -> list[str]:
 def main() -> int:
     errors: list[str] = []
     skill_files = sorted(ROOT.glob("*/SKILL.md"))
+    errors.extend(validate_catalogue(json.loads((ROOT / 'skills.json').read_text())))
     if not skill_files:
         errors.append("No skills found. Expected at least one */SKILL.md file.")
 

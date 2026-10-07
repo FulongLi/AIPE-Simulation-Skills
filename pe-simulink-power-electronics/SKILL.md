@@ -5,6 +5,11 @@ description: Use this skill for MATLAB and Simulink power electronics simulation
 
 # MATLAB/Simulink Power Electronics Simulation
 
+## Accessibility
+
+This optional variant requires an external commercial tool licence. Python/Octave can cover numerical/control analysis; block semantics and code generation require separate migration.
+For the scoped open path, see `../pe-python-control-analysis/SKILL.md` when available in the collection.
+
 ## Goal
 
 Use this skill to plan, build, inspect, and debug power electronics simulations in MATLAB, Simulink, and Simscape Electrical. The priority is to make the model verifiable, sweepable, and reproducible.

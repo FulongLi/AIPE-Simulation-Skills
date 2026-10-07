@@ -1,0 +1,4 @@
+interface:
+  display_name: "Open Field Analysis Setup"
+  short_description: "Select physics and define convergent field studies"
+  default_prompt: "Use $pe-open-fea-problem-setup to analyse this converter engineering problem and preserve evidence and assumptions."

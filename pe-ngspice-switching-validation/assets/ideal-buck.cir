@@ -1,0 +1,16 @@
+Synthetic 48 V buck, 100 kHz, duty 0.5; no validated device model
+Vin in 0 DC 48
+Vgate gate 0 PULSE(0 5 0 10n 10n 4.99u 10u)
+S1 in sw gate 0 ideal_switch
+D1 0 sw freewheel
+L1 sw lossy 100u
+RL lossy out 0.02
+C1 out 0 100u
+Rload out 0 10
+.model ideal_switch SW(Ron=0.01 Roff=1e9 Vt=2.5 Vh=0.1)
+.model freewheel D(Is=1e-12 Rs=0.01 N=1)
+.tran 100n 20m 0 100n
+.meas tran vout_avg AVG v(out) FROM=19m TO=20m
+.meas tran vout_min MIN v(out) FROM=19m TO=20m
+.meas tran vout_max MAX v(out) FROM=19m TO=20m
+.end

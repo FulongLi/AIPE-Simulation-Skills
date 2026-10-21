@@ -1,23 +1,75 @@
 name: Package tests
+
 on: [push, pull_request]
+
 permissions:
   contents: read
+
 jobs:
   unit:
+    name: pytest (Python ${{ matrix.python-version }}, ngspice)
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      - name: Install package and open example dependencies
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install the package with test and plotting extras, plus the open control example
         run: |
-          python -m pip install -e .[dev]
+          python -m pip install --upgrade pip
+          python -m pip install -e .[dev,plot]
           python -m pip install -r pe-python-control-analysis/requirements.txt
-      - name: Install ngspice (Ubuntu package) for the solver-marked tests
+
+      - name: Install ngspice (Ubuntu package) so the solver-marked tests execute instead of skipping
         run: sudo apt-get update && sudo apt-get install -y ngspice
-      - name: Unit, solver and skill tests
+
+      - name: Report solver availability
         run: |
           ngspice --version | head -3
-          python -m pytest -q tests/
-          python scripts/validate_skills.py
+          aipe-sim doctor
+
+      - name: Unit, waveform and solver tests
+        run: python -m pytest -q -ra tests/ --junitxml=pytest-all.xml
+
+      - name: Solver-marked tests executed (not skipped)
+        run: |
+          python -m pytest -q -m solver tests/ --junitxml=pytest-solver.xml
+          python - <<'EOF'
+          import xml.etree.ElementTree as ET
+          root = ET.parse("pytest-solver.xml").getroot()
+          suite = root if root.tag == "testsuite" else root[0]
+          tests, skipped = int(suite.get("tests", 0)), int(suite.get("skipped", 0))
+          print(f"solver tests: {tests} collected, {skipped} skipped")
+          assert tests > 0 and skipped == 0, "solver tests must run on CI (ngspice installed above)"
+          EOF
+
+      - name: Executed DAB example (netlist, ngspice transient, HDF5 waveform export, summary)
+        run: |
+          aipe-sim dab run --out ci-dab-run --cycles 24
+          python - <<'EOF'
+          import json, pathlib
+          summary = json.loads(pathlib.Path("ci-dab-run/summary.json").read_text(encoding="utf-8"))
+          print({k: summary.get(k) for k in ("status", "valid", "dataset_sha256")})
+          print({k: summary["ports"]["port2"].get(k) for k in ("power_avg",)} if "ports" in summary else "")
+          assert summary.get("valid") is True, f"DAB example did not reach a valid periodic steady state: {summary.get('status')}"
+          assert pathlib.Path("ci-dab-run/waveforms.h5").is_file(), "HDF5 waveform export missing"
+          EOF
+
+      - name: Keep solver logs, netlist and summaries
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dab-example-py${{ matrix.python-version }}
+          path: |
+            ci-dab-run/*.json
+            ci-dab-run/*.cir
+            ci-dab-run/*.log
+            ci-dab-run/*.txt
+            pytest-*.xml
+          if-no-files-found: ignore

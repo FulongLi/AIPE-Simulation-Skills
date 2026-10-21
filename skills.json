@@ -215,7 +215,7 @@
       "id": "pe-ngspice-switching-validation",
       "path": "pe-ngspice-switching-validation/SKILL.md",
       "access": "open_source",
-      "maturity": "prototype",
+      "maturity": "usable",
       "required_tools": [
         "ngspice"
       ],
@@ -223,15 +223,17 @@
       "external_licence_required": false,
       "open_alternative": null,
       "limitations": [
-        "Idealised switched buck smoke test; device losses are not validated."
+        "Level 1 ideal and Level 2 behavioural DAB models are executed and cross-checked analytically; manufacturer device models require per-model compatibility and licence review before any device-level fidelity claim.",
+        "ngspice must be installed separately (portable Windows build via AIPE_TOOLS_DIR/AIPE_NGSPICE)."
       ],
       "inputs": [
-        "topology and operating context",
-        "model assumptions and source evidence"
+        "DabCircuitSpec (SI units: voltages, frequency, turns ratio, inductances, dead time, device parameters, port and DC-link models)",
+        "operating point and solver settings"
       ],
       "outputs": [
-        "analysis artifacts or explicit unexecuted plan",
-        "validation limitations and evidence"
+        "ngspice netlist, log and raw data",
+        "HDF5 waveform dataset with units and provenance",
+        "summary.json engineering metrics (ports, series path, per-switch stresses, ZVS conditions, energy balance, steady-state diagnostics)"
       ]
     },
     {

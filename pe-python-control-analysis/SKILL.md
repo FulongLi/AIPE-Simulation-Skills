@@ -33,6 +33,15 @@ evaluate input/load/tolerance corners, crossover versus sampling/switching
 frequency, delay, saturation and perturbation amplitude. Compare a switched model
 or measurements before treating the compensation as validated.
 
+For the isolated dual active bridge under single-phase-shift control the repository
+package `aipe_simulation.control` provides a worked digital baseline: a cycle-averaged
+plant with stated assumptions, PI and 2P2Z (DF22) compensators, z-plane crossover and
+phase-margin evaluation with sampling, computation and measurement delays, and a
+closed-loop host simulation; its specification is `docs/dab-sps-control-spec.md` at
+the repository root. It uses NumPy only, is verified against the ngspice switching
+model for steady-state power, and does not replace switched-model transient or
+hardware validation of the control loops.
+
 Return model equations, assumptions, tool versions, SI inputs, output artifact,
 and failed/unchecked criteria. Map evidence to Core using `docs/core-mapping.md`
 from the repository when available; a JSON report alone is not an Engineering

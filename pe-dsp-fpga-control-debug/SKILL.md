@@ -43,6 +43,25 @@ Load only what is needed:
 - Fixed-point, scaling, and latency checklist: `references/fixed-point-timing-checklist.md`
 - Hardware bring-up and waveform diagnosis: `references/bring-up-debug-checklist.md`
 
+## Executable AIPE Baseline
+
+The repository package `aipe_simulation.control` (`src/aipe_simulation/control/`) is a host-side digital
+single-phase-shift control baseline for the AIPE 10 kW dual active bridge: a discrete SPS modulator model
+(command/slew limits, timer quantisation with coarse clock and high-resolution step, dead time, shadow-register
+updates, eight gate signals cross-checked against the ngspice gate timing), a cycle-averaged plant with explicit
+assumptions, PI and 2P2Z (DF22) compensators with z-plane crossover and phase-margin evaluation including
+computation and measurement delays, a closed-loop host simulation (soft start, load and set-point steps, power
+reversal, current limit, fault trip with latch, shutdown) and an ngspice Level 1 cross-check. The verifiable
+specification with sampling rates, ISR timing budget, PWM configuration, coefficient derivation, protection
+thresholds and sequences is `docs/dab-sps-control-spec.md` at the repository root. Use it to check timing
+budgets, coefficient derivations and phase-register resolution before touching a target. No firmware has been
+built or executed on hardware; TI reference values quoted there are TI's published figures, not AIPE results.
+
+```sh
+aipe-sim control design
+aipe-sim control simulate --out dab-control-baseline
+```
+
 ## Default Answer Structure
 
 1. Symptom restatement: state what works in simulation, what fails on the target, and the operating condition.

@@ -17,6 +17,30 @@ python -m unittest discover -s tests -v
 
 The synthetic averaged buck example checks numerical behaviour with python-control; it claims no hardware validation. An ngspice netlist is included and exercised in Ubuntu CI; solver-dependent local tests explicitly skip when ngspice is absent.
 
+## Executable Simulation Package (`aipe_simulation`)
+
+Besides the procedural skills, this repository ships an installable Python package
+(`python -m pip install -e .`) that executes real ngspice experiments:
+
+- `aipe_simulation.ngspice`: locate ngspice (PATH, `AIPE_NGSPICE`, `AIPE_TOOLS_DIR`, portable
+  Windows builds), qualify it with an RC step-response test, run batch netlists and parse raw files.
+- `aipe_simulation.dab`: typed `DabCircuitSpec` (SI units), single-phase-shift gate timing for all
+  eight switches, ngspice netlists for the ideal (Level 1) and behavioural (Level 2) dual-active-bridge
+  models, and an end-to-end runner writing netlist, log, raw data, HDF5 waveforms and `summary.json`.
+- `aipe_simulation.waveforms`: solver-independent waveform dataset (HDF5 with units and provenance),
+  periodic steady-state identification, RMS/peak/power metrics, per-switch turn-off currents and ZVS
+  conditions, volt-second balance, capacitor drift and an energy balance.
+
+```sh
+aipe-sim doctor
+aipe-sim dab run --out runs/dab-level1
+aipe-sim dab run --spec level2.yaml --out runs/dab-level2
+python -m pytest -q tests/          # solver tests skip when ngspice is absent
+```
+
+The executed 10 kW DAB benchmark and the numerical lessons behind the models are documented in
+[docs/dab-models.md](docs/dab-models.md). Manufacturer device models (Level 3) are not executed.
+
 ## Active Skills
 
 | Skill | Maturity | Access | Focus | References |
@@ -28,7 +52,7 @@ The synthetic averaged buck example checks numerical behaviour with python-contr
 | [`pe-freecad-converter-packaging`](./pe-freecad-converter-packaging/SKILL.md) | scaffold | open_source | Converter Mechanical Packaging with FreeCAD | 1 |
 | [`pe-kicad-power-stage-review`](./pe-kicad-power-stage-review/SKILL.md) | scaffold | open_source | Power-Stage PCB Review with KiCad | 1 |
 | [`pe-ltspice-power-electronics`](./pe-ltspice-power-electronics/SKILL.md) | usable | free_proprietary | LTspice Power Electronics Simulation | 3 |
-| [`pe-ngspice-switching-validation`](./pe-ngspice-switching-validation/SKILL.md) | prototype | open_source | Switching Circuit Validation with ngspice | 1 |
+| [`pe-ngspice-switching-validation`](./pe-ngspice-switching-validation/SKILL.md) | usable | open_source | Switching Circuit Validation with ngspice | 1 |
 | [`pe-open-fea-problem-setup`](./pe-open-fea-problem-setup/SKILL.md) | scaffold | open_source | Open Field-Analysis Problem Setup | 1 |
 | [`pe-plecs-power-electronics`](./pe-plecs-power-electronics/SKILL.md) | usable | commercial | PLECS Power Electronics Simulation | 4 |
 | [`pe-python-control-analysis`](./pe-python-control-analysis/SKILL.md) | prototype | open_source | Converter Averaged Control Analysis | 1 |

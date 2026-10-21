@@ -30,7 +30,7 @@ class MetadataTests(unittest.TestCase):
 
     def test_deterministic_readme(self):
         self.assertEqual(update_readme.generate(), update_readme.generate())
-        self.assertEqual(update_readme.generate(), (ROOT / "README.md").read_text())
+        self.assertEqual(update_readme.generate(), (ROOT / "README.md").read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

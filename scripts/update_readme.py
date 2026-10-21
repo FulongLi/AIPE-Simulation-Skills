@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Generate README.md from skill metadata."""
+"""Generate README.md from skill metadata and package metadata.
+
+The README follows the AIPE README template (Features / Installation / Usage /
+Project Information / Documentation) with one generated section, the skill
+catalogue, built from ``*/SKILL.md`` and ``skills.json``. The package version
+is read from ``pyproject.toml`` so the README cannot drift from the release.
+"""
 
 from __future__ import annotations
 
@@ -10,6 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 README = ROOT / "README.md"
+PYPROJECT = ROOT / "pyproject.toml"
 
 PLANNED_SKILLS: list[dict[str, str]] = []
 
@@ -36,9 +43,17 @@ def first_heading(path: Path) -> str:
     return path.parent.name
 
 
+def package_version() -> str:
+    """Return the ``[project]`` version from pyproject.toml (tomllib needs Python 3.11)."""
+    match = re.search(r'^version\s*=\s*"([^"]+)"', PYPROJECT.read_text(encoding="utf-8"), re.MULTILINE)
+    if not match:
+        raise ValueError("pyproject.toml declares no [project] version")
+    return match.group(1)
+
+
 def skill_rows() -> list[dict[str, str]]:
     rows: list[dict[str, str]] = []
-    policy = {s['id']: s for s in json.loads((ROOT / 'skills.json').read_text())['skills']}
+    policy = {s['id']: s for s in json.loads((ROOT / 'skills.json').read_text(encoding="utf-8"))['skills']}
     for skill_md in sorted(ROOT.glob("*/SKILL.md")):
         if skill_md.parts[-2].startswith("."):
             continue
@@ -61,6 +76,7 @@ def skill_rows() -> list[dict[str, str]]:
 
 def generate() -> str:
     rows = skill_rows()
+    version = package_version()
 
     active_table = "\n".join(
         [
@@ -73,6 +89,7 @@ def generate() -> str:
         ]
     )
 
+    planned_section = ""
     if PLANNED_SKILLS:
         planned_table = "\n".join(
             [
@@ -84,94 +101,76 @@ def generate() -> str:
                 ],
             ]
         )
-    else:
-        planned_table = "_No planned skills are listed right now. Add future items to `PLANNED_SKILLS` in `scripts/update_readme.py`._"
+        planned_section = f"\n### Planned skills\n\n{planned_table}\n"
 
-    return f"""# AIPE Simulation Skills
+    return f"""# AIPE — Simulation Skills
 
-AIPE means **AI for Power Engineering**. This repository translates engineering questions into reusable simulation, CAD, PCB and field-analysis workflows. Open-source tools are the default learning path; commercial workflows remain optional professional integrations.
+AIPE Simulation Skills is the simulation workflow collection of **AI for Power Engineering**. It pairs
+{len(rows)} agent skills - procedural `SKILL.md` workflows for circuit, control, CAD, PCB and field-analysis
+tools - with an installable Python package, `aipe_simulation`, that executes real ngspice experiments and
+analyses the resulting waveforms. Open-source tools (ngspice, python-control, FreeCAD, KiCad, Gmsh/Elmer)
+are the default path; LTspice, PLECS, MATLAB/Simulink, SIMetrix/SIMPLIS, ANSYS and COMSOL remain optional,
+externally licensed integrations. Contracts come from AIPE-Core; the manifest is indexed by AIPE-Registry.
 
-All eight existing workflows and their reference material are retained. Five new engineering workflows add Python control analysis, ngspice switching validation, FreeCAD packaging, KiCad power-stage review and open field-analysis problem setup. LTspice is free proprietary software. PLECS, MATLAB/Simulink, SIMetrix/SIMPLIS, ANSYS and COMSOL require external licences for their respective variants.
+## Features
 
-The [tool policy and capability matrix](docs/tool-policy.md), [skill metadata](skills.json), [AIPE manifest](aipe.yaml), and [Core mapping](docs/core-mapping.md) describe exact boundaries. CAD/PCB/FEA additions are workflow scaffolds; MCP candidates are researched only. Existing repository content has no declared blanket licence and remains `NOASSERTION`.
+- {len(rows)} skills with maturity and tool-access classification in `skills.json`; procedures live in each
+  skill's `references/`
+- `aipe_simulation.ngspice`: locates and qualifies ngspice, runs batch netlists, parses raw files
+- `aipe_simulation.dab`: typed `DabCircuitSpec`, single-phase-shift gating, ideal (Level 1) and behavioural
+  (Level 2) dual-active-bridge netlists, runner writing netlist, log, raw data, HDF5 waveforms and
+  `summary.json`
+- `aipe_simulation.waveforms`: HDF5 waveform dataset, steady-state detection, RMS/peak/power metrics,
+  per-switch turn-off currents, ZVS conditions, volt-second and energy balances
+- `aipe_simulation.control`: host-side single-phase-shift control baseline verified against ngspice runs
+- Deterministic README generation and skill validation enforced in CI
 
-## Runnable Open Example
+## Installation
 
-Create an isolated Python environment, install `pe-python-control-analysis/requirements.txt`, and run:
+Python 3.10 or newer; numpy, h5py and PyYAML are installed with the package. ngspice is optional (solver
+tests skip without it). The open control example needs `pe-python-control-analysis/requirements.txt`.
 
 ```sh
+python -m pip install -e ".[dev]"
+python -m pip install -r pe-python-control-analysis/requirements.txt
+```
+
+## Usage
+
+```sh
+aipe-sim doctor                                   # locate and numerically qualify ngspice
+aipe-sim dab run --out runs/dab-level1            # ideal 10 kW DAB: netlist, ngspice run, HDF5 waveforms, summary.json
 python pe-python-control-analysis/scripts/buck_control.py --output buck-result.json
-python -m unittest discover -s tests -v
+python -m pytest -q tests/                        # solver tests skip when ngspice is absent
 ```
 
-The synthetic averaged buck example checks numerical behaviour with python-control; it claims no hardware validation. An ngspice netlist is included and exercised in Ubuntu CI; solver-dependent local tests explicitly skip when ngspice is absent.
+To use a skill in Codex, copy its folder into your skills directory and invoke it by name, for example
+`Use $pe-ngspice-switching-validation to check this switching netlist`; see
+[docs/development.md](docs/development.md).
 
-## Executable Simulation Package (`aipe_simulation`)
-
-Besides the procedural skills, this repository ships an installable Python package
-(`python -m pip install -e .`) that executes real ngspice experiments:
-
-- `aipe_simulation.ngspice`: locate ngspice (PATH, `AIPE_NGSPICE`, `AIPE_TOOLS_DIR`, portable
-  Windows builds), qualify it with an RC step-response test, run batch netlists and parse raw files.
-- `aipe_simulation.dab`: typed `DabCircuitSpec` (SI units), single-phase-shift gate timing for all
-  eight switches, ngspice netlists for the ideal (Level 1) and behavioural (Level 2) dual-active-bridge
-  models, and an end-to-end runner writing netlist, log, raw data, HDF5 waveforms and `summary.json`.
-- `aipe_simulation.waveforms`: solver-independent waveform dataset (HDF5 with units and provenance),
-  periodic steady-state identification, RMS/peak/power metrics, per-switch turn-off currents and ZVS
-  conditions, volt-second balance, capacitor drift and an energy balance.
-
-```sh
-aipe-sim doctor
-aipe-sim dab run --out runs/dab-level1
-aipe-sim dab run --spec level2.yaml --out runs/dab-level2
-python -m pytest -q tests/          # solver tests skip when ngspice is absent
-```
-
-The executed 10 kW DAB benchmark and the numerical lessons behind the models are documented in
-[docs/dab-models.md](docs/dab-models.md). Manufacturer device models (Level 3) are not executed.
-
-## Active Skills
+## Skill catalogue
 
 {active_table}
+{planned_section}
+## Project Information
 
-## Planned Skills
+- Version: {version} (`pyproject.toml`, package `aipe-simulation-skills`)
+- Status: Alpha (package classifier `Development Status :: 3 - Alpha`; `aipe.yaml` maturity `usable`).
+  CAD, PCB and FEA skills are scaffolds, MCP connectors are evaluated only, no hardware validation is claimed
+- Developer: Fulong Li
+- Organisation: Spirit Connect / AIPE Labs
+- License: not declared - no licence file; `aipe.yaml` records `NOASSERTION` and the retained skill content
+  has no blanket licence
 
-{planned_table}
+## Documentation
 
-## How To Use These Skills
-
-1. Install or copy the skill folder you want to use into your Codex skills directory.
-2. Invoke a skill explicitly by name, for example: `Use $pe-ltspice-power-electronics to debug this LTspice converter simulation`.
-3. Provide the engineering context the skill asks for: topology, operating range, control method, simulation tool, abnormal waveform, solver settings, and what you are trying to prove.
-4. Let the skill load only the relevant `references/` files. The `SKILL.md` file gives the high-level workflow; the references contain tool-specific procedures and checklists.
-5. When capturing project experience, remove customer names, project codenames, product names, exact confidential parameters, internal file paths, and any screenshot metadata that could reveal sensitive information.
-
-## How To Add Or Update A Skill
-
-1. Create or edit a folder named after the skill, for example `pe-new-topic/`.
-2. Keep the required workflow instructions in `pe-new-topic/SKILL.md`.
-3. Put detailed procedures, checklists, templates, and examples under `pe-new-topic/references/`.
-4. Add `pe-new-topic/agents/openai.yaml` with a display name, short description, and default prompt.
-5. Run the update and validation commands:
-
-```bash
-python3 scripts/update_readme.py
-python3 scripts/validate_skills.py
-```
-
-`scripts/update_readme.py` scans all `*/SKILL.md` files and `skills.json` to regenerate this document deterministically. `scripts/validate_skills.py` checks metadata, references, UI metadata and README freshness. Update the sidecar metadata when adding a skill.
-
-## Repository Convention
-
-- Each skill lives in a standalone directory and must include `SKILL.md`.
-- Detailed tool workflows and checklists live in `references/` and are loaded only when needed.
-- UI metadata lives in `agents/openai.yaml`.
-- Skill content should be primarily English so the repository can help a broader engineering audience.
-- Case studies should be anonymized by default.
-
-## Automation
-
-GitHub Actions runs the same README freshness and skill validation checks on push and pull request. If README is stale after a skill update, the CI check fails and tells the contributor to run `python3 scripts/update_readme.py`.
+- [Using and adding skills, conventions, README regeneration and CI](docs/development.md)
+- [Architecture: package modules, skill layout and CLI](docs/architecture.md)
+- [Executed 10 kW DAB benchmark and model lessons](docs/dab-models.md) ·
+  [SPS control specification](docs/dab-sps-control-spec.md)
+- [Tool policy and capability matrix](docs/tool-policy.md) · [v0.1 validation record](docs/validation.md) ·
+  [Core mapping](docs/core-mapping.md)
+- [Skill metadata](skills.json) · [Capability manifest](aipe.yaml)
 """
 
 

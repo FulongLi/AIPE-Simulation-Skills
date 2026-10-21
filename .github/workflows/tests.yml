@@ -1,0 +1,23 @@
+name: Package tests
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install package and open example dependencies
+        run: |
+          python -m pip install -e .[dev]
+          python -m pip install -r pe-python-control-analysis/requirements.txt
+      - name: Install ngspice (Ubuntu package) for the solver-marked tests
+        run: sudo apt-get update && sudo apt-get install -y ngspice
+      - name: Unit, solver and skill tests
+        run: |
+          ngspice --version | head -3
+          python -m pytest -q tests/
+          python scripts/validate_skills.py

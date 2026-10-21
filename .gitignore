@@ -2,3 +2,9 @@
 __pycache__/
 *.pyc
 buck-result.json
+
+*.egg-info/
+__pycache__/
+.pytest_cache/
+build/
+dist/

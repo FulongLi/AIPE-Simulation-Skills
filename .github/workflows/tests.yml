@@ -49,15 +49,25 @@ jobs:
           assert tests > 0 and skipped == 0, "solver tests must run on CI (ngspice installed above)"
           EOF
 
-      - name: Executed DAB example (netlist, ngspice transient, HDF5 waveform export, summary)
+      - name: Executed DAB example (generated netlist, ngspice transient, HDF5 waveform export, steady-state summary)
         run: |
-          aipe-sim dab run --out ci-dab-run --cycles 24
+          aipe-sim dab default-spec > ci-spec.yaml
+          python - <<'EOF'
+          import yaml
+          spec = yaml.safe_load(open("ci-spec.yaml", encoding="utf-8"))
+          # analytic series current at the centred origin of the 10 kW point; without it the zero-state start needs >64 cycles
+          spec["sim"]["use_initial_conditions"] = True
+          spec["sim"]["initial_series_current"] = 14.285714285714288
+          yaml.safe_dump(spec, open("ci-spec.yaml", "w", encoding="utf-8"), sort_keys=False)
+          EOF
+          aipe-sim dab run --spec ci-spec.yaml --out ci-dab-run --cycles 24
           python - <<'EOF'
           import json, pathlib
           summary = json.loads(pathlib.Path("ci-dab-run/summary.json").read_text(encoding="utf-8"))
-          print({k: summary.get(k) for k in ("status", "valid", "dataset_sha256")})
-          print({k: summary["ports"]["port2"].get(k) for k in ("power_avg",)} if "ports" in summary else "")
+          p2 = summary["ports"]["port2"]["power_avg"]["value"]
+          print({"status": summary.get("status"), "valid": summary.get("valid"), "P2_W": round(p2, 1), "dataset_sha256": summary.get("dataset_sha256")})
           assert summary.get("valid") is True, f"DAB example did not reach a valid periodic steady state: {summary.get('status')}"
+          assert abs(p2 - 10_000.0) < 100.0, f"output power {p2:.1f} W is not within 1 % of the 10 kW analytic point"
           assert pathlib.Path("ci-dab-run/waveforms.h5").is_file(), "HDF5 waveform export missing"
           EOF
 

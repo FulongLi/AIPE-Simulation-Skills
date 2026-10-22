@@ -8,3 +8,6 @@ __pycache__/
 .pytest_cache/
 build/
 dist/
+
+# Run directories written by aipe-sim (netlists, logs, raw data, HDF5 waveforms)
+runs/
